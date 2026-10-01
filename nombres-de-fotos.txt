@@ -1,0 +1,45 @@
+NATIVA MOTORS — nombres de archivo esperados para las fotos
+==============================================================
+Poné tus fotos dentro de la carpeta 'image', numeradas según el
+auto de esta lista (el orden en que aparecen en la web). Cada auto
+admite hasta 3 fotos; si tenés menos de 3, con la -1.jpg alcanza.
+Podés usar .jpg, .jpeg, .png o .webp — cualquiera funciona.
+
+ 1. Volkswagen Gol        -> image/photo1-1.jpg | photo1-2.jpg | photo1-3.jpg
+ 2. Volkswagen Vento      -> image/photo2-1.jpg | photo2-2.jpg | photo2-3.jpg
+ 3. Volkswagen Amarok     -> image/photo3-1.jpg | photo3-2.jpg | photo3-3.jpg
+ 4. Volkswagen T-Cross    -> image/photo4-1.jpg | photo4-2.jpg | photo4-3.jpg
+ 5. Ford Ka         -> image/photo5-1.jpg | photo5-2.jpg | photo5-3.jpg
+ 6. Ford Focus      -> image/photo6-1.jpg | photo6-2.jpg | photo6-3.jpg
+ 7. Ford Ranger     -> image/photo7-1.jpg | photo7-2.jpg | photo7-3.jpg
+ 8. Ford EcoSport   -> image/photo8-1.jpg | photo8-2.jpg | photo8-3.jpg
+ 9. Chevrolet Onix       -> image/photo9-1.jpg | photo9-2.jpg | photo9-3.jpg
+10. Chevrolet Cruze      -> image/photo10-1.jpg | photo10-2.jpg | photo10-3.jpg
+11. Chevrolet S10        -> image/photo11-1.jpg | photo11-2.jpg | photo11-3.jpg
+12. Chevrolet Tracker    -> image/photo12-1.jpg | photo12-2.jpg | photo12-3.jpg
+13. Fiat Cronos     -> image/photo13-1.jpg | photo13-2.jpg | photo13-3.jpg
+14. Fiat Argo       -> image/photo14-1.jpg | photo14-2.jpg | photo14-3.jpg
+15. Fiat Toro       -> image/photo15-1.jpg | photo15-2.jpg | photo15-3.jpg
+16. Fiat Mobi       -> image/photo16-1.jpg | photo16-2.jpg | photo16-3.jpg
+17. Renault Sandero    -> image/photo17-1.jpg | photo17-2.jpg | photo17-3.jpg
+18. Renault Duster     -> image/photo18-1.jpg | photo18-2.jpg | photo18-3.jpg
+19. Renault Kangoo     -> image/photo19-1.jpg | photo19-2.jpg | photo19-3.jpg
+20. Renault Logan      -> image/photo20-1.jpg | photo20-2.jpg | photo20-3.jpg
+21. Renault Captur     -> image/photo21-1.jpg | photo21-2.jpg | photo21-3.jpg
+22. Peugeot 208        -> image/photo22-1.jpg | photo22-2.jpg | photo22-3.jpg
+23. Peugeot 3008       -> image/photo23-1.jpg | photo23-2.jpg | photo23-3.jpg
+24. Peugeot Partner    -> image/photo24-1.jpg | photo24-2.jpg | photo24-3.jpg
+25. Peugeot 2008       -> image/photo25-1.jpg | photo25-2.jpg | photo25-3.jpg
+26. Peugeot 408        -> image/photo26-1.jpg | photo26-2.jpg | photo26-3.jpg
+27. Toyota Corolla    -> image/photo27-1.jpg | photo27-2.jpg | photo27-3.jpg
+28. Toyota Hilux      -> image/photo28-1.jpg | photo28-2.jpg | photo28-3.jpg
+29. Toyota Etios      -> image/photo29-1.jpg | photo29-2.jpg | photo29-3.jpg
+30. Toyota SW4        -> image/photo30-1.jpg | photo30-2.jpg | photo30-3.jpg
+31. Honda Civic      -> image/photo31-1.jpg | photo31-2.jpg | photo31-3.jpg
+32. Honda HR-V       -> image/photo32-1.jpg | photo32-2.jpg | photo32-3.jpg
+33. Honda Fit        -> image/photo33-1.jpg | photo33-2.jpg | photo33-3.jpg
+34. Nissan Versa      -> image/photo34-1.jpg | photo34-2.jpg | photo34-3.jpg
+35. Nissan Kicks      -> image/photo35-1.jpg | photo35-2.jpg | photo35-3.jpg
+36. Nissan Frontier   -> image/photo36-1.jpg | photo36-2.jpg | photo36-3.jpg
+37. Citroën C3         -> image/photo37-1.jpg | photo37-2.jpg | photo37-3.jpg
+38. Jeep Renegade   -> image/photo38-1.jpg | photo38-2.jpg | photo38-3.jpg
