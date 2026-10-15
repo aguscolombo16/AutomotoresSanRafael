@@ -2,32 +2,54 @@ const WSP_NUMBER = "5492604222363";
 
 // ---------- COLORES POR AGENCIA ----------
 // Solo vos sabés qué color es de quién: en la página NO se muestra el nombre.
-// "name" es solo una nota para vos. Cambiá el color (hex) cuando quieras,
-// o agregá una línea nueva para una agencia nueva.
-// En cada auto de CARS agregale  s:"id"  (ej: s:"agencia2").
-// Si un auto no tiene "s", se toma como "nativa".
 const SELLERS = {
   nativa:    { name:"Nativa Motors", color:"#155EEF" },
   CP3:  { name:"CP3",     color:"#F97316" },
   Videla:  { name:"Videla Automotores",     color:"#A855F7" },
-  JOY:  { name:"JOY",     color:"#EF4444" },
+  Rosseti:  { name:"Rosseti",     color:"#EF4444" },
   particular:{ name:"Particular",    color:"#111827" }
 };
 const sellerOf = car => SELLERS[car.s] || SELLERS.particular;
 
+// ---------- CATEGORÍAS ----------
+// En cada vehículo de CARS agregale  cat:"motos" | "agricolas" | "autoelevadores" | "lanchas"
+// Si no tiene "cat", se toma como "autos".
+// "0km" no es una categoría que se carga: aparece sola con todo lo que tenga km:0 (o hs:0).
+// Para máquinas y lanchas podés usar  hs:1200  (horas de uso) en vez de km.
+const CATEGORIES = [
+  { id:"todos",          label:"Todos" },
+  { id:"autos",          label:"Autos" },
+  { id:"0km",            label:"0 km" },
+  { id:"motos",          label:"Motos" },
+  { id:"agricolas",      label:"Máquinas agrícolas" },
+  { id:"autoelevadores", label:"Autoelevadores" },
+  { id:"lanchas",        label:"Lanchas" }
+];
+const isZero = car => car.km === 0 || car.hs === 0;
+const inCat = (car, cat) => cat === "todos" ? true : cat === "0km" ? isZero(car) : car.cat === cat;
+
+// Íconos por categoría
 const CAR_ICON = `<path d="M3 13l1.5-4.5A2 2 0 0 1 6.4 7h11.2a2 2 0 0 1 1.9 1.5L21 13"/><path d="M3 13h18v4a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H6v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><circle cx="7.5" cy="17" r="1.4" fill="currentColor" stroke="none"/><circle cx="16.5" cy="17" r="1.4" fill="currentColor" stroke="none"/>`;
+const ICONS = {
+  autos: CAR_ICON,
+  motos: `<circle cx="5.5" cy="16.5" r="3"/><circle cx="18.5" cy="16.5" r="3"/><path d="M5.5 16.5L9 9h4l3 4.5 2.5 3M13 9l1.5-2H17M9 9H7"/>`,
+  agricolas: `<circle cx="7" cy="16" r="3.5"/><circle cx="18" cy="17.5" r="2"/><path d="M10.5 16H16M4 12V7h6l2 5h6v3.5M10 12V7"/>`,
+  autoelevadores: `<path d="M4 18V8h6l2 6v4M4 12h8"/><circle cx="6" cy="19" r="1.5"/><circle cx="12" cy="19" r="1.5"/><path d="M17 4v15M17 17h4"/>`,
+  lanchas: `<path d="M3 15h18l-2.5 4h-13z"/><path d="M12 3v12M12 4l6 8h-6M12 7l-4 5h4"/>`
+};
+const iconOf = car => ICONS[car.cat] || CAR_ICON;
 
 const BRAND_COLORS = {
   "Volkswagen": ["#1D4ED8","#3B82F6"], "Ford": ["#0F4C9A","#2E7BE0"], "Chevrolet": ["#B45309","#F59E0B"],
   "Fiat": ["#B91C1C","#EF4444"], "Renault": ["#CA8A04","#FACC15"], "Peugeot": ["#0E7490","#22D3EE"],
   "Toyota": ["#C2410C","#F97316"], "Honda": ["#6D28D9","#A78BFA"], "Nissan": ["#1F2937","#4B5563"],
-  "Citroën": ["#0F766E","#2DD4BF"], "Jeep": ["#166534","#4ADE80"]
+  "Citroën": ["#0F766E","#2DD4BF"], "Jeep": ["#166534","#4ADE80"],
+  "Yamaha": ["#1D4ED8","#60A5FA"], "Zanella": ["#B91C1C","#F87171"], "John Deere": ["#166534","#4ADE80"],
+  "Massey Ferguson": ["#B91C1C","#F87171"], "Hyster": ["#CA8A04","#FACC15"], "Quicksilver": ["#0E7490","#22D3EE"]
 };
 
-// Cuántas fotos por auto va a intentar buscar en la carpeta image/
 const PHOTOS_PER_CAR = 3;
 
-// Convierte "Volkswagen Gol" en "volkswagen-gol" para armar el nombre de archivo
 function slugify(str){
   return str.toLowerCase()
     .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -35,23 +57,28 @@ function slugify(str){
     .replace(/(^-|-$)/g, "");
 }
 
-// Definimos una única extensión estándar para todas las fotos del catálogo
-const PHOTO_EXTENSION = "webp"; // O "jpg" si tus fotos son jpg
+const PHOTO_EXTENSION = "webp";
 
-// Generamos la ruta directa sin depender de múltiples extensiones
+// Cada categoría tiene su propia carpeta y su propia numeración (car.n = posición dentro de su categoría):
+//   autos          -> image/photo1-1.webp            (igual que antes)
+//   motos          -> image/motos/photo1-1.webp
+//   agricolas      -> image/agricolas/photo1-1.webp
+//   autoelevadores -> image/autoelevadores/photo1-1.webp
+//   lanchas        -> image/lanchas/photo1-1.webp
+// Opcional: si el vehículo tiene  ph:"xr150"  usa ese nombre en vez de "photoN" (ej: image/motos/xr150-1.webp)
 function photoPath(car, index){
-  // IMPORTANTE: Dejá los signos $ y las llaves {} intactas
-  return `image/photo${car.id + 1}-${index + 1}.${PHOTO_EXTENSION}`;
+  const folder = car.cat === "autos" ? "image" : `image/${car.cat}`;
+  const base = car.ph || `photo${car.n}`;
+  return `${folder}/${base}-${index + 1}.${PHOTO_EXTENSION}`;
 }
 
-// Intentamos cargar la foto una sola vez. Si falla, quitamos el <img>.
 function attachPhoto(imgEl, car, index){
   imgEl.src = photoPath(car, index);
-  imgEl.onerror = () => {
-    imgEl.remove(); 
-  };
+  imgEl.onerror = () => { imgEl.remove(); };
 }
+
 const CARS = [
+  // ---------- AUTOS ----------
   {b:"Volkswagen",m:"Gol",y:2008,p:7500000,km:78000,t:"Manual",f:"Nafta",c:"Blanco"},
   {b:"Chevrolet",m:"JOY",y:2012,p:12000000,km:45000,t:"Manual",f:"Nafta",c:"Gris", s:"Videla"},
   {b:"Citroen",m:"Berlingo",y:2017,p:16000000,km:60000,t:"Automática",f:"Diésel",c:"Negro", s:"Videla"},
@@ -93,11 +120,67 @@ const CARS = [
   {b:"Toyota",m:"Yaris",y:2020,p:15000000,km:50000,t:"Manual",f:"Nafta",c:"Gris", s:"CP3"},
   {b:"Ford",m:"Fiesta",y:2018,p:9000000,km:80000,t:"Manual",f:"Nafta",c:"Blanco", s:"Videla"},
   {b:"Fiat",m:"Palio",y:2017,p:7500000,km:95000,t:"Manual",f:"Nafta",c:"Rojo", s:"JOY"},
-  {b:"Renault",m:"Clio",y:2016,p:6800000,km:120000,t:"Manual",f:"Nafta",c:"Plata", s:"particular"}
-].map((car,i)=>({...car, id:i, s:car.s || "nativa", slug:slugify(car.b + "-" + car.m)}));
+  {b:"Renault",m:"Clio",y:2016,p:6800000,km:120000,t:"Manual",f:"Nafta",c:"Plata", s:"particular"},
+  {b:"Fiat",m:"Cronos",y:2025,p:24000000,km:0,t:"Manual",f:"Nafta",c:"Blanco"}, // 0km (ejemplo)
+
+  // ---------- MOTOS (ejemplos: reemplazalos por los reales) ----------
+  {cat:"motos",b:"Benelli",m:"TRK 702x",y:2024,p:16000000 ,km:12000,t:"Caja 6ta",f:"Nafta",c:"verde con negro", s:"particular"},
+  {cat:"motos",b:"Yamaha",m:"FZ 25",y:2021,p:4500000,km:18000,t:"Manual",f:"Nafta",c:"Negro"},
+  {cat:"motos",b:"Zanella",m:"ZB 110",y:2025,p:2400000,km:0,t:"Manual",f:"Nafta",c:"Azul"},
+  {cat:"motos",b:"Honda",m:"Wave 110",y:2019,p:1800000,km:30000,t:"Manual",f:"Nafta",c:"Gris"},
+
+  // ---------- MÁQUINAS AGRÍCOLAS (hs = horas de uso) ----------
+  {cat:"agricolas",b:"John Deere",m:"Tractor 5078E",y:2018,p:42000000,hs:3200,t:"Manual",f:"Diésel",c:"Verde"},
+  {cat:"agricolas",b:"Massey Ferguson",m:"Tractor 290",y:2012,p:18000000,hs:6500,t:"Manual",f:"Diésel",c:"Rojo"},
+  {cat:"agricolas",b:"John Deere",m:"Tractor 6110J",y:2025,p:75000000,hs:0,t:"Manual",f:"Diésel",c:"Verde"},
+
+  // ---------- AUTOELEVADORES ----------
+  {cat:"autoelevadores",b:"Hyster",m:"H2.5",y:2016,p:14000000,hs:5400,t:"Automática",f:"GNC",c:"Amarillo"},
+  {cat:"autoelevadores",b:"Toyota",m:"8FG25",y:2019,p:19000000,hs:3100,t:"Automática",f:"Nafta",c:"Naranja"},
+
+  // ---------- LANCHAS ----------
+  {cat:"lanchas",b:"Quicksilver",m:"Captur 555",y:2020,p:21000000,hs:210,f:"Nafta",c:"Blanco"},
+  {cat:"lanchas",b:"Tracker",m:"Pro 170",y:2018,p:12000000,hs:380,f:"Nafta",c:"Gris"}
+].map((() => {
+  const counters = {}; // cuenta cuántos vehículos van en cada categoría
+  return (car, i) => {
+    const cat = car.cat || "autos";
+    counters[cat] = (counters[cat] || 0) + 1;
+    return {...car, id:i, cat, n:counters[cat], s:car.s || "nativa", slug:slugify(car.b + "-" + car.m)};
+  };
+})());
+
+// ---------- ORDEN ALEATORIO ----------
+// Cada vez que se entra a la página se arma un orden nuevo, mezclando agencias y particulares
+// (se va turnando entre vendedores para que no salgan todos los de una misma agencia juntos).
+// Se calcula UNA sola vez al cargar, así las tarjetas no saltan mientras se usan los filtros.
+function shuffle(arr){
+  for (let i = arr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+function mixedOrder(list){
+  const groups = {};
+  list.forEach(c => (groups[c.s] = groups[c.s] || []).push(c));
+  Object.values(groups).forEach(shuffle);
+  const keys = shuffle(Object.keys(groups));
+  const out = [];
+  let left = true;
+  while (left){
+    left = false;
+    keys.forEach(k => { if (groups[k].length){ out.push(groups[k].shift()); left = true; } });
+  }
+  return out;
+}
+const RANK = new Map();
+mixedOrder(CARS).forEach((c, i) => RANK.set(c.id, i));
 
 const fmtPrice = n => "u$s " + n.toLocaleString("es-AR");
 const fmtKm = n => n.toLocaleString("es-AR") + " km";
+// Muestra km o horas según corresponda
+const fmtUse = car => car.hs !== undefined ? car.hs.toLocaleString("es-AR") + " hs" : fmtKm(car.km);
 
 function thumbGradient(brand, variant){
   const [c1,c2] = BRAND_COLORS[brand] || ["#155EEF","#0EA855"];
@@ -108,18 +191,17 @@ function thumbGradient(brand, variant){
 function carCard(car){
   const el = document.createElement("div");
   el.className = "card";
+  const specs = [car.y, fmtUse(car), car.t].filter(Boolean);
   el.innerHTML = `
     <div class="thumb" style="background:${thumbGradient(car.b,0)}">
       <span class="seller-dot" style="background:${sellerOf(car).color}" ></span>
       <span class="tag">${car.y}</span>
       <span class="pics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5.5-5-4 4-2-2L3 18"/></svg>${PHOTOS_PER_CAR}</span>
-      <svg viewBox="0 0 24 24" fill="none" stroke="${(BRAND_COLORS[car.b]||['#1D4ED8'])[0]}" stroke-width="1.4">${CAR_ICON}</svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="${(BRAND_COLORS[car.b]||['#1D4ED8'])[0]}" stroke-width="1.4">${iconOf(car)}</svg>
     </div>
     <div class="card-body">
       <h3>${car.b} ${car.m}</h3>
-      <div class="card-specs">
-        <span>${car.y}</span><span>·</span><span>${fmtKm(car.km)}</span><span>·</span><span>${car.t}</span>
-      </div>
+      <div class="card-specs">${specs.map(s=>`<span>${s}</span>`).join("<span>·</span>")}</div>
       <div class="card-price">
         <b>${fmtPrice(car.p)}</b>
         <span class="see">Ver detalles →</span>
@@ -142,22 +224,50 @@ const fMarca = document.getElementById("fMarca");
 const fPrecio = document.getElementById("fPrecio");
 const fOrden = document.getElementById("fOrden");
 const clearBtn = document.getElementById("clearBtn");
+const catsEl = document.getElementById("cats");
+let currentCat = "todos";
 
-const brands = [...new Set(CARS.map(c=>c.b))].sort();
-brands.forEach(b=>{
-  const o = document.createElement("option"); o.value=b; o.textContent=b; fMarca.appendChild(o);
-});
+// Marcas según la categoría elegida
+function buildBrands(){
+  const pool = CARS.filter(c => inCat(c, currentCat));
+  const brands = [...new Set(pool.map(c=>c.b))].sort();
+  fMarca.innerHTML = '<option value="">Todas las marcas</option>';
+  brands.forEach(b=>{
+    const o = document.createElement("option"); o.value=b; o.textContent=b; fMarca.appendChild(o);
+  });
+}
+
+// Botones de categorías con cantidad
+function renderCats(){
+  catsEl.innerHTML = "";
+  CATEGORIES.forEach(cat=>{
+    const n = CARS.filter(c => inCat(c, cat.id)).length;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "cat-btn" + (cat.id === currentCat ? " active" : "");
+    btn.innerHTML = `${cat.label} <span>${n}</span>`;
+    btn.addEventListener("click", ()=>{
+      currentCat = cat.id;
+      fMarca.value = "";
+      buildBrands();
+      renderCats();
+      applyFilters();
+    });
+    catsEl.appendChild(btn);
+  });
+}
+
 document.getElementById("statTotal").textContent = CARS.length;
-document.getElementById("statMarcas").textContent = brands.length;
-document.getElementById("countTotal").textContent = CARS.length;
+document.getElementById("statMarcas").textContent = new Set(CARS.map(c=>c.b)).size;
 
 function applyFilters(){
   const q = qInput.value.trim().toLowerCase();
   const marca = fMarca.value;
   const rango = fPrecio.value;
   const orden = fOrden.value;
+  const pool = CARS.filter(c => inCat(c, currentCat));
 
-  let result = CARS.filter(car=>{
+  let result = pool.filter(car=>{
     const text = (car.b + " " + car.m).toLowerCase();
     if (q && !text.includes(q)) return false;
     if (marca && car.b !== marca) return false;
@@ -168,15 +278,18 @@ function applyFilters(){
     return true;
   });
 
-  if (orden === "precio-asc") result.sort((a,b)=>a.p-b.p);
+  const use = c => c.hs !== undefined ? c.hs : c.km;
+  if (!orden) result.sort((a,b)=>RANK.get(a.id)-RANK.get(b.id));
+  else if (orden === "precio-asc") result.sort((a,b)=>a.p-b.p);
   else if (orden === "precio-desc") result.sort((a,b)=>b.p-a.p);
   else if (orden === "anio-desc") result.sort((a,b)=>b.y-a.y);
-  else if (orden === "km-asc") result.sort((a,b)=>a.km-b.km);
+  else if (orden === "km-asc") result.sort((a,b)=>use(a)-use(b));
 
   grid.innerHTML = "";
   result.forEach(car=>grid.appendChild(carCard(car)));
   emptyMsg.classList.toggle("show", result.length===0);
   document.getElementById("countShown").textContent = result.length;
+  document.getElementById("countTotal").textContent = pool.length;
 }
 
 [qInput].forEach(el=>el.addEventListener("input", applyFilters));
@@ -215,7 +328,7 @@ function paintGallery(car){
   svg.setAttribute("viewBox","0 0 24 24"); svg.setAttribute("fill","none");
   svg.setAttribute("stroke",(BRAND_COLORS[car.b]||["#1D4ED8"])[0]); svg.setAttribute("stroke-width","1.3");
   svg.classList.add("car-svg");
-  svg.innerHTML = CAR_ICON;
+  svg.innerHTML = iconOf(car);
   modalGallery.insertBefore(svg, modalGallery.querySelector(".navbtn.prev"));
 
   const img = document.createElement("img");
@@ -236,14 +349,16 @@ function openModal(car){
   document.getElementById("mPrice").textContent = fmtPrice(car.p);
   const sel = sellerOf(car);
   document.getElementById("mDot").style.background = sel.color;
-  document.getElementById("mSpecs").innerHTML = `
-    <div><div class="k">Año</div><div class="v">${car.y}</div></div>
-    <div><div class="k">Kilometraje</div><div class="v">${fmtKm(car.km)}</div></div>
-    <div><div class="k">Transmisión</div><div class="v">${car.t}</div></div>
-    <div><div class="k">Combustible</div><div class="v">${car.f}</div></div>
-    <div><div class="k">Color</div><div class="v">${car.c}</div></div>
-    <div><div class="k">Ubicación</div><div class="v">San Rafael, Mendoza</div></div>
-  `;
+  const rows = [
+    ["Año", car.y],
+    [car.hs !== undefined ? "Horas de uso" : "Kilometraje", fmtUse(car)],
+    ["Transmisión", car.t],
+    ["Combustible", car.f],
+    ["Color", car.c],
+    ["Ubicación", "San Rafael, Mendoza"]
+  ].filter(r => r[1]);
+  document.getElementById("mSpecs").innerHTML = rows
+    .map(r => `<div><div class="k">${r[0]}</div><div class="v">${r[1]}</div></div>`).join("");
   const msg = encodeURIComponent(`Hola! Te escribo por el ${car.b} ${car.m} ${car.y} que vi en la web de Automotores San Rafael.`);
   document.getElementById("mCta").href = `https://wa.me/${WSP_NUMBER}?text=${msg}`;
   overlay.classList.add("open");
@@ -258,7 +373,9 @@ overlay.addEventListener("click", (e)=>{ if(e.target===overlay) closeModal(); })
 document.addEventListener("keydown",(e)=>{ if(e.key==="Escape") closeModal(); });
 
 /* ---------- WhatsApp links ---------- */
-const wspGeneric = `https://wa.me/${WSP_NUMBER}?text=${encodeURIComponent("Hola! Quiero consultar por un auto en Automotores San Rafael.")}`;
+const wspGeneric = `https://wa.me/${WSP_NUMBER}?text=${encodeURIComponent("Hola! Quiero consultar por un vehículo en Automotores San Rafael.")}`;
 ["headWsp","footWsp","fabWsp"].forEach(id=>document.getElementById(id).href = wspGeneric);
 
+buildBrands();
+renderCats();
 applyFilters();

@@ -20,7 +20,7 @@
       </a>
       <nav>
         <span class="navlinks">
-          <a href="#catalogo">Autos</a>
+          <a href="#catalogo">Vehículos</a>
           <a href="#ubicacion">Ubicación</a>
         </span>
         <a class="btn-wsp" id="headWsp" target="_blank" rel="noopener">
@@ -35,10 +35,10 @@
     <div class="wrap hero-grid">
       <div>
         <h1>Tu próximo auto<br>está en <em>San Rafael</em></h1>
-        <p>Autos de las agencias y particulares de la ciudad, todos en un solo lugar. Filtrá por marca y precio, mirá las fotos y consultá directo por WhatsApp.</p>
+        <p>Autos, motos, máquinas agrícolas, autoelevadores y lanchas de las agencias y particulares de la ciudad, todo en un solo lugar. Filtrá por categoría, marca y precio, mirá las fotos y consultá directo por WhatsApp.</p>
       </div>
       <div class="hero-stats">
-        <div><b id="statTotal">0</b><span>autos disponibles</span></div>
+        <div><b id="statTotal">0</b><span>vehículos disponibles</span></div>
         <div><b id="statMarcas">0</b><span>marcas</span></div>
       </div>
     </div>
@@ -46,33 +46,36 @@
 
   <div class="filters" id="catalogo">
     <div class="wrap">
+      <!-- CATEGORÍAS: las arma el script.js -->
+      <div class="cats" id="cats"></div>
+
       <div class="filters-row">
         <input type="text" id="q" placeholder="Buscar por marca o modelo…">
         <select id="fMarca"><option value="">Todas las marcas</option></select>
         <select id="fPrecio">
           <option value="">Cualquier precio</option>
-          <option value="0-10000">Hasta $ 10.000.000</option>
-          <option value="10000-18000">$ 10.000.000 – 20.000.000</option>
-          <option value="18000-28000">$ 20.000.000 – 30.000.000</option>
-          <option value="28000-999999">Más de $ 30.000.000</option>
+          <option value="0-10000000">Hasta 10.000.000</option>
+          <option value="10000000-20000000">10.000.000 – 20.000.000</option>
+          <option value="20000000-30000000">20.000.000 – 30.000.000</option>
+          <option value="30000000-999999999">Más de 30.000.000</option>
         </select>
         <select id="fOrden">
           <option value="">Ordenar por</option>
           <option value="precio-asc">Precio: menor a mayor</option>
           <option value="precio-desc">Precio: mayor a menor</option>
           <option value="anio-desc">Año: más nuevo</option>
-          <option value="km-asc">Menos kilómetros</option>
+          <option value="km-asc">Menos kilómetros / horas</option>
         </select>
         <button class="clear-btn" id="clearBtn">Limpiar filtros</button>
       </div>
-      <div class="count-line">Mostrando <b id="countShown">0</b> de <b id="countTotal">0</b> autos</div>
+      <div class="count-line">Mostrando <b id="countShown">0</b> de <b id="countTotal">0</b> vehículos</div>
     </div>
   </div>
 
   <section class="catalog">
     <div class="wrap">
       <div class="grid" id="grid"></div>
-      <div class="empty" id="emptyMsg">No encontramos autos con esos filtros. Probá ampliando el rango de precio o cambiando la marca.</div>
+      <div class="empty" id="emptyMsg">No encontramos vehículos con esos filtros. Probá ampliando el rango de precio o cambiando la marca.</div>
     </div>
   </section>
 
@@ -80,7 +83,7 @@
     <div class="wrap loc-grid">
       <div>
         <h2>Te llevamos a verlo</h2>
-        <p>Elegí el auto que te guste y escribinos por WhatsApp: coordinamos y te acompañamos personalmente a la agencia (o con el particular) donde está la unidad.</p>
+        <p>Elegí el vehículo que te guste y escribinos por WhatsApp: coordinamos y te acompañamos personalmente a la agencia (o con el particular) donde está la unidad.</p>
         <div class="loc-item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.2 7-12.5A7 7 0 0 0 5 9.5C5 14.8 12 22 12 22Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
           <div><b>San Rafael, Mendoza</b><span>Argentina</span></div>
