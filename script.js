@@ -73,7 +73,7 @@ function photoPath(car, index){
 }
 
 // Fotos de vehículos cargados desde el panel (car.photos = lista de URLs de Cloudinary)
-const photoCount = car => car.photos ? car.photos.length : PHOTOS_PER_CAR;
+const photoCount = car => car.photos ? Math.max(car.photos.length, 1) : PHOTOS_PER_CAR;
 const cld = (url, w) => url.includes("res.cloudinary.com") ? url.replace("/upload/", `/upload/f_auto,q_auto,w_${w}/`) : url;
 
 function attachPhoto(imgEl, car, index, w = 1100){
@@ -87,69 +87,7 @@ function attachPhoto(imgEl, car, index, w = 1100){
 }
 
 const CARS = [
-  // ---------- AUTOS ----------
-  {b:"Volkswagen",m:"Gol",y:2008,p:7500000,km:78000,t:"Manual",f:"Nafta",c:"Blanco"},
-  {b:"Chevrolet",m:"JOY",y:2012,p:12000000,km:45000,t:"Manual",f:"Nafta",c:"Gris", s:"Videla"},
-  {b:"Citroen",m:"Berlingo",y:2017,p:16000000,km:60000,t:"Automática",f:"Diésel",c:"Negro", s:"Videla"},
-  {b:"Renault",m:"Oroch",y:2022,p:35000000,km:35000,t:"Automática",f:"Nafta",c:"Blanco", s:"Videla"},
-  {b:"Toyota",m:"Etios",y:2019,p:23000000,km:65000,t:"Manual",f:"Nafta",c:"Rojo", s:"Videla"},
-  {b:"Chevrolet",m:"Cruze",y:2021,p:21000000,km:90000,t:"Manual",f:"Nafta",c:"Gris", s:"Videla"},
-  {b:"Toyota",m:"Corolla",y:2024,p:47000000,km:70000,t:"Automática",f:"Diésel",c:"Plata", s:"Videla"},
-  {b:"Toyota",m:"Corolla Cross",y:2016,p:52000000,km:110000,t:"Manual",f:"Nafta",c:"Blanco", s:"Videla"},
-  {b:"Toyota",m:"Hilux",y:2021,p:62000000,km:40000,t:"Manual",f:"Nafta",c:"Rojo", s:"Videla"},
-  {b:"Volkswagen",m:"Amarok",y:2018,p:65000000,km:85000,t:"Automática",f:"Nafta",c:"Negro", s:"Videla"},
-  {b:"Toyota",m:"Hilux SR",y:2019,p:49000000,km:95000,t:"Manual",f:"Diésel",c:"Blanco", s:"Videla"},
-  {b:"Renault",m:"Kangoo",y:2023,p:22000000,km:15000,t:"Automática",f:"Nafta",c:"Gris", s:"Videla"},
-  {b:"Chevrolet",m:"Cruze",y:2020,p:18000000,km:55000,t:"Manual",f:"Nafta",c:"Blanco", s:"Videla"},
-  {b:"Hyundai",m:"Tucson",y:2017,p:36000000,km:60000,t:"Manual",f:"Nafta",c:"Rojo", s:"Videla"},
-  {b:"Renault",m:"Oroch",y:2017,p:21000000,km:48000,t:"Automática",f:"Diésel",c:"Gris", s:"Videla"},
-  {b:"Volkswagen",m:"Virtus",y:2020,p:20000000,km:20000,t:"Manual",f:"Nafta",c:"Blanco", s:"Videla"},
-  {b:"Ford",m:"Focus",y:2018,p:16000000,km:88000,t:"Manual",f:"Nafta",c:"Gris", s:"Videla"},
-  {b:"Ford",m:"Eco Sport",y:2020,p:18000000,km:52000,t:"Manual",f:"Nafta",c:"Negro", s:"Videla"},
-  {b:"Renault",m:"Kangoo",y:2016,p:7600000,km:130000,t:"Manual",f:"Diésel",c:"Blanco"},
-  {b:"Renault",m:"Logan",y:2017,p:89000000,km:100000,t:"Manual",f:"Nafta",c:"Plata"},
-  {b:"Renault",m:"Captur",y:2022,p:19500000,km:25000,t:"Automática",f:"Nafta",c:"Blanco"},
-  {b:"Peugeot",m:"208",y:2021,p:13600000,km:38000,t:"Manual",f:"Nafta",c:"Rojo"},
-  {b:"Peugeot",m:"3008",y:2019,p:22000000,km:66000,t:"Automática",f:"Nafta",c:"Gris"},
-  {b:"Peugeot",m:"Partner",y:2017,p:8700000,km:105000,t:"Manual",f:"Diésel",c:"Blanco"},
-  {b:"Peugeot",m:"2008",y:2022,p:18900000,km:22000,t:"Automática",f:"Nafta",c:"Negro"},
-  {b:"Peugeot",m:"408",y:2023,p:26500000,km:12000,t:"Automática",f:"Nafta",c:"Gris"},
-  {b:"Toyota",m:"Corolla",y:2020,p:19800000,km:47000,t:"Automática",f:"Nafta",c:"Blanco"},
-  {b:"Toyota",m:"Hilux",y:2021,p:38500000,km:55000,t:"Automática",f:"Diésel",c:"Plata"},
-  {b:"Toyota",m:"Etios",y:2018,p:9700000,km:82000,t:"Manual",f:"Nafta",c:"Rojo"},
-  {b:"Toyota",m:"SW4",y:2019,p:42000000,km:68000,t:"Automática",f:"Diésel",c:"Negro"},
-  {b:"Honda",m:"Civic",y:2017,p:13900000,km:92000,t:"Automática",f:"Nafta",c:"Gris"},
-  {b:"Honda",m:"HR-V",y:2021,p:21300000,km:34000,t:"Automática",f:"Nafta",c:"Blanco"},
-  {b:"Honda",m:"Fit",y:2016,p:8100000,km:115000,t:"Manual",f:"Nafta",c:"Plata"},
-  {b:"Nissan",m:"Versa",y:2020,p:12400000,km:44000,t:"Manual",f:"Nafta",c:"Blanco"},
-  {b:"Nissan",m:"Kicks",y:2022,p:18600000,km:26000,t:"Automática",f:"Nafta",c:"Gris"},
-  {b:"Nissan",m:"Frontier",y:2019,p:28900000,km:72000,t:"Automática",f:"Diésel",c:"Negro"},
-  {b:"Citroën",m:"C3",y:2018,p:8800000,km:96000,t:"Manual",f:"Nafta",c:"Rojo"},
-  {b:"Jeep",m:"Renegade",y:2021,p:20500000,km:41000,t:"Automática",f:"Nafta",c:"Blanco"},
-  {b:"Toyota",m:"Yaris",y:2020,p:15000000,km:50000,t:"Manual",f:"Nafta",c:"Gris", s:"CP3"},
-  {b:"Ford",m:"Fiesta",y:2018,p:9000000,km:80000,t:"Manual",f:"Nafta",c:"Blanco", s:"Videla"},
-  {b:"Fiat",m:"Palio",y:2017,p:7500000,km:95000,t:"Manual",f:"Nafta",c:"Rojo", s:"JOY"},
-  {b:"Renault",m:"Clio",y:2016,p:6800000,km:120000,t:"Manual",f:"Nafta",c:"Plata", s:"particular"},
-  {b:"Fiat",m:"Cronos",y:2025,p:24000000,km:0,t:"Manual",f:"Nafta",c:"Blanco"}, // 0km (ejemplo)
-
-  // ---------- MOTOS (ejemplos: reemplazalos por los reales) ----------
-  {cat:"motos",b:"Benelli",m:"TRK 702x",y:2024,p:16000000 ,km:12000,t:"Caja 6ta",f:"Nafta",c:"verde con negro", s:"particular"},
-  {cat:"motos",b:"Yamaha",m:"FZ 25",y:2021,p:4500000,km:18000,t:"Manual",f:"Nafta",c:"Negro"},
-  {cat:"motos",b:"Zanella",m:"ZB 110",y:2025,p:2400000,km:0,t:"Manual",f:"Nafta",c:"Azul"},
-  {cat:"motos",b:"Honda",m:"Wave 110",y:2019,p:1800000,km:30000,t:"Manual",f:"Nafta",c:"Gris"},
-
-  // ---------- MÁQUINAS AGRÍCOLAS (hs = horas de uso) ----------
-  {cat:"agricolas",b:"John Deere",m:"Tractor 5078E",y:2018,p:42000000,hs:3200,t:"Manual",f:"Diésel",c:"Verde"},
-  {cat:"agricolas",b:"Massey Ferguson",m:"Tractor 290",y:2012,p:18000000,hs:6500,t:"Manual",f:"Diésel",c:"Rojo"},
-  {cat:"agricolas",b:"John Deere",m:"Tractor 6110J",y:2025,p:75000000,hs:0,t:"Manual",f:"Diésel",c:"Verde"},
-
-  // ---------- AUTOELEVADORES ----------
-  {cat:"autoelevadores",b:"Hyster",m:"H2.5",y:2016,p:14000000,hs:5400,t:"Automática",f:"GNC",c:"Amarillo"},
-  {cat:"autoelevadores",b:"Toyota",m:"8FG25",y:2019,p:19000000,hs:3100,t:"Automática",f:"Nafta",c:"Naranja"},
-
-  // ---------- LANCHAS ----------
-  {cat:"lanchas",b:"Quicksilver",m:"Captur 555",y:2020,p:21000000,hs:210,f:"Nafta",c:"Blanco"},
-  {cat:"lanchas",b:"Tracker",m:"Pro 170",y:2018,p:12000000,hs:380,f:"Nafta",c:"Gris"}
+  // Los vehículos ahora se cargan desde el panel (admin.html)
 ].map((() => {
   const counters = {}; // cuenta cuántos vehículos van en cada categoría
   return (car, i) => {
@@ -395,7 +333,7 @@ applyFilters();
 /* ---------- Vehículos cargados desde el panel (Firebase) ---------- */
 // Los llama cloud.js al terminar de leer la base de datos. Los marcados como vendidos no se muestran.
 function addRemoteCars(list){
-  list.filter(v => !v.sold && v.photos && v.photos.length).forEach(v=>{
+  list.filter(v => !v.sold).forEach(v=>{
     CARS.push({...v, cat:v.cat || "autos", s:v.s || "particular", id:CARS.length, slug:slugify(v.b + "-" + v.m)});
   });
   RANK.clear();
