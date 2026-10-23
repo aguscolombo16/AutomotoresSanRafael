@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Panel | Automotores San Rafael</title>
+<style>
+:root{--blue:#155EEF;--green:#0EA855;--ink:#151A21;--muted:#6B7280;--line:#E7E9EE;--soft:#F2F6FF;--red:#DC2626}
+*{box-sizing:border-box}
+body{margin:0;background:var(--soft);color:var(--ink);font-family:-apple-system,"Segoe UI",Roboto,sans-serif;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+.wrap{max-width:620px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:0}
+h2{font-size:17px;margin:26px 0 10px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
+.top small{color:var(--muted);display:block;word-break:break-all}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px}
+label{display:block;font-size:13px;font-weight:600;margin:12px 0 4px}
+input,select{width:100%;font-size:16px;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+input:focus,select:focus{outline:2px solid var(--blue);border-color:var(--blue)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hint{font-size:12px;color:var(--muted);margin-top:3px}
+button{font:600 15px inherit;font-family:inherit;border:0;border-radius:10px;padding:13px 16px;cursor:pointer}
+.primary{background:var(--green);color:#fff;width:100%;margin-top:18px;font-size:16px}
+.google{background:var(--blue);color:#fff;width:100%;margin-top:14px;font-size:16px}
+.ghost{background:#fff;border:1px solid var(--line);color:var(--ink);padding:8px 12px;font-size:13px}
+.danger{color:var(--red)}
+button:disabled{opacity:.55}
+.previews{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.previews img{width:76px;height:76px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.msg{margin-top:12px;font-size:14px;padding:10px 12px;border-radius:10px;display:none}
+.msg.ok{display:block;background:#E8FBEF;color:#065F36}
+.msg.err{display:block;background:#FEE2E2;color:#991B1B}
+.item{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item img{width:72px;height:72px;object-fit:cover;border-radius:10px;background:var(--soft);flex-shrink:0}
+.item b{display:block;font-size:15px}
+.item .meta{font-size:12.5px;color:var(--muted);margin:2px 0 8px}
+.item .btns{display:flex;gap:6px;flex-wrap:wrap}
+.badge{display:inline-block;background:#FEE2E2;color:#991B1B;font-size:11px;font-weight:700;padding:2px 7px;border-radius:100px;margin-left:6px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- LOGIN -->
+  <section id="viewLogin" class="card" style="margin-top:40px;text-align:center">
+    <h1>Panel de carga</h1>
+    <p style="color:var(--muted)">Automotores San Rafael<br>Acceso solo para los dueños.</p>
+    <button class="google" id="btnLogin">Ingresar con Google</button>
+    <div class="msg" id="loginMsg"></div>
+  </section>
+
+  <!-- PANEL -->
+  <section id="viewPanel" hidden>
+    <div class="top">
+      <div><h1>Panel de carga</h1><small id="who"></small></div>
+      <button class="ghost" id="btnLogout">Salir</button>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0" id="formTitle">Cargar vehículo</h2>
+      <form id="form" autocomplete="off">
+        <label>Categoría</label>
+        <select id="cat">
+          <option value="autos">Autos y camionetas</option>
+          <option value="motos">Motos</option>
+          <option value="agricolas">Máquinas agrícolas</option>
+          <option value="autoelevadores">Autoelevadores</option>
+          <option value="lanchas">Lanchas</option>
+        </select>
+
+        <label>Vendedor</label>
+        <select id="s">
+          <option value="particular">Particular</option>
+          <option value="nativa">Nativa Motors</option>
+          <option value="Videla">Videla Automotores</option>
+          <option value="CP3">CP3</option>
+          <option value="Rosseti">Rosseti</option>
+        </select>
+
+        <div class="row">
+          <div><label>Marca</label><input id="b" list="brands" required></div>
+          <div><label>Modelo</label><input id="m" required></div>
+        </div>
+        <datalist id="brands">
+          <option>Volkswagen</option><option>Ford</option><option>Chevrolet</option><option>Fiat</option><option>Renault</option>
+          <option>Peugeot</option><option>Toyota</option><option>Honda</option><option>Nissan</option><option>Citroën</option>
+          <option>Jeep</option><option>Hyundai</option><option>Yamaha</option><option>Zanella</option><option>John Deere</option>
+          <option>Massey Ferguson</option><option>Hyster</option>
+        </datalist>
+
+        <div class="row">
+          <div><label>Año</label><input id="y" type="number" inputmode="numeric" min="1950" max="2100" required></div>
+          <div><label id="useLabel">Kilómetros</label><input id="use" type="number" inputmode="numeric" min="0" required><div class="hint">0 = aparece en "0 km"</div></div>
+        </div>
+
+        <label>Precio</label>
+        <input id="p" type="number" inputmode="numeric" min="0" required>
+        <div class="hint">Solo números, sin puntos.</div>
+
+        <div class="row">
+          <div><label>Transmisión</label>
+            <select id="t"><option value="">-</option><option>Manual</option><option>Automática</option></select></div>
+          <div><label>Combustible</label>
+            <select id="f"><option value="">-</option><option>Nafta</option><option>Diésel</option><option>GNC</option><option>Eléctrico</option><option>Híbrido</option></select></div>
+        </div>
+
+        <label>Color</label>
+        <input id="c">
+
+        <label>Patente (privada, no se muestra en la web)</label>
+        <input id="plate" autocapitalize="characters">
+
+        <label>Fotos (hasta 5)</label>
+        <input id="photos" type="file" accept="image/*" multiple>
+        <div class="hint" id="photoHint">Elegí de la galería o sacá con la cámara. La primera es la que se ve en la tarjeta.</div>
+        <div class="previews" id="previews"></div>
+
+        <button class="primary" id="btnSave" type="submit">Publicar</button>
+        <button class="ghost" id="btnCancel" type="button" hidden style="width:100%;margin-top:8px">Cancelar edición</button>
+        <div class="msg" id="formMsg"></div>
+      </form>
+    </div>
+
+    <h2>Vehículos cargados <span id="count" style="color:var(--muted);font-weight:500"></span></h2>
+    <div class="card" id="list"></div>
+  </section>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getFirestore, collection, doc, getDocs, setDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, deleteField } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import { firebaseConfig, CLOUDINARY, ADMIN_EMAILS } from "./firebase-config.js";
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const show = (el, text, ok) => { el.textContent = text; el.className = "msg " + (ok ? "ok" : "err"); };
+const clear = el => { el.className = "msg"; el.textContent = ""; };
+
+if (firebaseConfig.apiKey.startsWith("PEGAR")) {
+  show($("loginMsg"), "Falta completar firebase-config.js con los datos de Firebase.", false);
+  $("btnLogin").disabled = true;
+}
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const isAdmin = u => u && ADMIN_EMAILS.map(e => e.toLowerCase()).includes((u.email || "").toLowerCase());
+
+/* ---------- Login ---------- */
+$("btnLogin").onclick = async () => {
+  clear($("loginMsg"));
+  try { await signInWithPopup(auth, new GoogleAuthProvider()); }
+  catch (e) { show($("loginMsg"), "No se pudo iniciar sesión: " + (e.code || e.message), false); }
+};
+$("btnLogout").onclick = () => signOut(auth);
+
+onAuthStateChanged(auth, user => {
+  if (user && !isAdmin(user)) {
+    show($("loginMsg"), `${user.email} no tiene permiso para cargar vehículos.`, false);
+    signOut(auth);
+    return;
+  }
+  $("viewLogin").hidden = !!user;
+  $("viewPanel").hidden = !user;
+  if (user) { $("who").textContent = user.email; loadList(); }
+});
+
+/* ---------- Formulario ---------- */
+const usesHours = cat => ["agricolas", "autoelevadores", "lanchas"].includes(cat);
+const syncCat = () => {
+  const h = usesHours($("cat").value);
+  $("useLabel").textContent = h ? "Horas de uso" : "Kilómetros";
+};
+$("cat").onchange = syncCat;
+
+let editing = null;      // vehículo que se está editando (o null)
+let files = [];          // fotos nuevas elegidas
+
+$("photos").onchange = e => {
+  files = [...e.target.files].slice(0, 5);
+  $("previews").innerHTML = files.map(f => `<img src="${URL.createObjectURL(f)}" alt="">`).join("");
+};
+
+async function shrink(file, max = 1600) {
+  try {
+    const bmp = await createImageBitmap(file, { imageOrientation: "from-image" });
+    const k = Math.min(1, max / Math.max(bmp.width, bmp.height));
+    const cv = document.createElement("canvas");
+    cv.width = Math.round(bmp.width * k); cv.height = Math.round(bmp.height * k);
+    cv.getContext("2d").drawImage(bmp, 0, 0, cv.width, cv.height);
+    return await new Promise(r => cv.toBlob(r, "image/jpeg", 0.85));
+  } catch { return file; }
+}
+
+async function uploadPhoto(file) {
+  const fd = new FormData();
+  fd.append("file", await shrink(file));
+  fd.append("upload_preset", CLOUDINARY.uploadPreset);
+  const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY.cloudName}/image/upload`, { method: "POST", body: fd });
+  const j = await r.json();
+  if (!r.ok || !j.secure_url) throw new Error(j.error?.message || "Error al subir la foto");
+  return j.secure_url;
+}
+
+function resetForm() {
+  $("form").reset(); files = []; editing = null;
+  $("previews").innerHTML = "";
+  $("formTitle").textContent = "Cargar vehículo";
+  $("btnSave").textContent = "Publicar";
+  $("btnCancel").hidden = true;
+  $("photoHint").textContent = "Elegí de la galería o sacá con la cámara. La primera es la que se ve en la tarjeta.";
+  syncCat();
+}
+$("btnCancel").onclick = () => { resetForm(); clear($("formMsg")); };
+
+$("form").onsubmit = async e => {
+  e.preventDefault();
+  clear($("formMsg"));
+  if (!editing && !files.length) return show($("formMsg"), "Agregá al menos una foto.", false);
+  $("btnSave").disabled = true;
+  $("btnSave").textContent = "Subiendo…";
+  try {
+    const cat = $("cat").value;
+    const photos = files.length ? await Promise.all(files.map(uploadPhoto)) : editing.photos;
+    const n = Number($("use").value);
+    const data = {
+      cat, s: $("s").value,
+      b: $("b").value.trim(), m: $("m").value.trim(),
+      y: Number($("y").value), p: Number($("p").value),
+      t: $("t").value, f: $("f").value, c: $("c").value.trim(),
+      photos,
+      [usesHours(cat) ? "hs" : "km"]: n,
+      [usesHours(cat) ? "km" : "hs"]: deleteField()
+    };
+    let id;
+    if (editing) { id = editing.id; }
+    else { id = doc(collection(db, "vehicles")).id; data.sold = false; data.createdAt = serverTimestamp(); }
+    await setDoc(doc(db, "vehicles", id), data, { merge: true });
+    await setDoc(doc(db, "vehicles_private", id), { plate: $("plate").value.trim().toUpperCase() }, { merge: true });
+    const wasEditing = !!editing;
+    resetForm();
+    show($("formMsg"), wasEditing ? "Cambios guardados." : "¡Publicado! Ya se ve en la web.", true);
+    loadList();
+  } catch (err) {
+    show($("formMsg"), "No se pudo guardar: " + (err.code || err.message), false);
+  } finally {
+    $("btnSave").disabled = false;
+    $("btnSave").textContent = editing ? "Guardar cambios" : "Publicar";
+  }
+};
+
+/* ---------- Lista ---------- */
+let items = [];
+async function loadList() {
+  try {
+    const [vs, ps] = await Promise.all([
+      getDocs(query(collection(db, "vehicles"), orderBy("createdAt", "desc"))),
+      getDocs(collection(db, "vehicles_private"))
+    ]);
+    const plates = Object.fromEntries(ps.docs.map(d => [d.id, d.data().plate || ""]));
+    items = vs.docs.map(d => ({ id: d.id, plate: plates[d.id] || "", ...d.data() }));
+  } catch (err) {
+    $("list").innerHTML = `<div class="msg err">No se pudo leer la lista: ${esc(err.code || err.message)}</div>`;
+    return;
+  }
+  $("count").textContent = `(${items.length})`;
+  $("list").innerHTML = items.length ? items.map(v => `
+    <div class="item" data-id="${v.id}">
+      <img src="${esc((v.photos?.[0] || "").replace("/upload/", "/upload/f_auto,q_auto,w_200/"))}" alt="">
+      <div>
+        <b>${esc(v.b)} ${esc(v.m)} ${esc(v.y)}${v.sold ? '<span class="badge">VENDIDO</span>' : ""}</b>
+        <div class="meta">${esc(v.cat)} · ${Number(v.p).toLocaleString("es-AR")}${v.plate ? " · " + esc(v.plate) : ""}</div>
+        <div class="btns">
+          <button class="ghost" data-a="edit">Editar</button>
+          <button class="ghost" data-a="sold">${v.sold ? "Volver a publicar" : "Marcar vendido"}</button>
+          <button class="ghost danger" data-a="del">Eliminar</button>
+        </div>
+      </div>
+    </div>`).join("") : '<div style="color:var(--muted)">Todavía no cargaste ninguno.</div>';
+}
+
+$("list").onclick = async e => {
+  const btn = e.target.closest("button[data-a]");
+  if (!btn) return;
+  const v = items.find(x => x.id === btn.closest(".item").dataset.id);
+  try {
+    if (btn.dataset.a === "sold") {
+      await updateDoc(doc(db, "vehicles", v.id), { sold: !v.sold });
+      loadList();
+    } else if (btn.dataset.a === "del") {
+      if (!confirm(`¿Eliminar ${v.b} ${v.m}? No se puede deshacer.`)) return;
+      await deleteDoc(doc(db, "vehicles", v.id));
+      await deleteDoc(doc(db, "vehicles_private", v.id));
+      loadList();
+    } else if (btn.dataset.a === "edit") {
+      editing = v; files = [];
+      $("cat").value = v.cat; syncCat();
+      $("s").value = v.s || "particular";
+      $("b").value = v.b; $("m").value = v.m; $("y").value = v.y; $("p").value = v.p;
+      $("use").value = usesHours(v.cat) ? v.hs : v.km;
+      $("t").value = v.t || ""; $("f").value = v.f || ""; $("c").value = v.c || "";
+      $("plate").value = v.plate || "";
+      $("photos").value = "";
+      $("previews").innerHTML = (v.photos || []).map(u => `<img src="${esc(u.replace("/upload/", "/upload/f_auto,q_auto,w_200/"))}" alt="">`).join("");
+      $("photoHint").textContent = "Si no elegís fotos nuevas, quedan las actuales. Si elegís, reemplazan a todas.";
+      $("formTitle").textContent = `Editando ${v.b} ${v.m}`;
+      $("btnSave").textContent = "Guardar cambios";
+      $("btnCancel").hidden = false;
+      clear($("formMsg"));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  } catch (err) {
+    alert("No se pudo: " + (err.code || err.message));
+  }
+};
+syncCat();
+</script>
+</body>
+</html>

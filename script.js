@@ -72,8 +72,17 @@ function photoPath(car, index){
   return `${folder}/${base}-${index + 1}.${PHOTO_EXTENSION}`;
 }
 
-function attachPhoto(imgEl, car, index){
-  imgEl.src = photoPath(car, index);
+// Fotos de vehículos cargados desde el panel (car.photos = lista de URLs de Cloudinary)
+const photoCount = car => car.photos ? car.photos.length : PHOTOS_PER_CAR;
+const cld = (url, w) => url.includes("res.cloudinary.com") ? url.replace("/upload/", `/upload/f_auto,q_auto,w_${w}/`) : url;
+
+function attachPhoto(imgEl, car, index, w = 1100){
+  if (car.photos){
+    if (!car.photos[index]) { imgEl.remove(); return; }
+    imgEl.src = cld(car.photos[index], w);
+  } else {
+    imgEl.src = photoPath(car, index);
+  }
   imgEl.onerror = () => { imgEl.remove(); };
 }
 
@@ -196,7 +205,7 @@ function carCard(car){
     <div class="thumb" style="background:${thumbGradient(car.b,0)}">
       <span class="seller-dot" style="background:${sellerOf(car).color}" ></span>
       <span class="tag">${car.y}</span>
-      <span class="pics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5.5-5-4 4-2-2L3 18"/></svg>${PHOTOS_PER_CAR}</span>
+      <span class="pics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5.5-5-4 4-2-2L3 18"/></svg>${photoCount(car)}</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="${(BRAND_COLORS[car.b]||['#1D4ED8'])[0]}" stroke-width="1.4">${iconOf(car)}</svg>
     </div>
     <div class="card-body">
@@ -212,7 +221,7 @@ function carCard(car){
   thumbImg.alt = `${car.b} ${car.m}`;
   thumbImg.loading = "lazy";
   el.querySelector(".thumb").appendChild(thumbImg);
-  attachPhoto(thumbImg, car, 0);
+  attachPhoto(thumbImg, car, 0, 600);
   el.addEventListener("click", ()=>openModal(car));
   return el;
 }
@@ -257,8 +266,11 @@ function renderCats(){
   });
 }
 
-document.getElementById("statTotal").textContent = CARS.length;
-document.getElementById("statMarcas").textContent = new Set(CARS.map(c=>c.b)).size;
+function updateStats(){
+  document.getElementById("statTotal").textContent = CARS.length;
+  document.getElementById("statMarcas").textContent = new Set(CARS.map(c=>c.b)).size;
+}
+updateStats();
 
 function applyFilters(){
   const q = qInput.value.trim().toLowerCase();
@@ -309,7 +321,7 @@ let currentCar = null;
 function renderGallery(car){
   galIndex = 0;
   galDots.innerHTML = "";
-  for(let i=0;i<PHOTOS_PER_CAR;i++){
+  for(let i=0;i<photoCount(car);i++){
     const d = document.createElement("span"); if(i===0) d.className="active";
     galDots.appendChild(d);
   }
@@ -339,8 +351,8 @@ function paintGallery(car){
 
   [...galDots.children].forEach((d,i)=>d.classList.toggle("active", i===galIndex));
 }
-document.getElementById("galPrev").addEventListener("click",(e)=>{ e.stopPropagation(); galIndex=(galIndex+PHOTOS_PER_CAR-1)%PHOTOS_PER_CAR; paintGallery(currentCar); });
-document.getElementById("galNext").addEventListener("click",(e)=>{ e.stopPropagation(); galIndex=(galIndex+1)%PHOTOS_PER_CAR; paintGallery(currentCar); });
+document.getElementById("galPrev").addEventListener("click",(e)=>{ e.stopPropagation(); galIndex=(galIndex+photoCount(currentCar)-1)%photoCount(currentCar); paintGallery(currentCar); });
+document.getElementById("galNext").addEventListener("click",(e)=>{ e.stopPropagation(); galIndex=(galIndex+1)%photoCount(currentCar); paintGallery(currentCar); });
 
 function openModal(car){
   currentCar = car;
@@ -379,3 +391,17 @@ const wspGeneric = `https://wa.me/${WSP_NUMBER}?text=${encodeURIComponent("Hola!
 buildBrands();
 renderCats();
 applyFilters();
+
+/* ---------- Vehículos cargados desde el panel (Firebase) ---------- */
+// Los llama cloud.js al terminar de leer la base de datos. Los marcados como vendidos no se muestran.
+function addRemoteCars(list){
+  list.filter(v => !v.sold && v.photos && v.photos.length).forEach(v=>{
+    CARS.push({...v, cat:v.cat || "autos", s:v.s || "particular", id:CARS.length, slug:slugify(v.b + "-" + v.m)});
+  });
+  RANK.clear();
+  mixedOrder(CARS).forEach((c, i) => RANK.set(c.id, i));
+  updateStats();
+  buildBrands();
+  renderCats();
+  applyFilters();
+}

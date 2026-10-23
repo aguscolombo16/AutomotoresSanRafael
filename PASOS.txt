@@ -1,0 +1,18 @@
+PASOS PARA ACTIVAR EL PANEL (una sola vez, ~15 minutos)
+
+A) FIREBASE (login + base de datos)
+1. Entrá a https://console.firebase.google.com con tu Gmail > "Crear un proyecto" (nombre: automotores-san-rafael). Podés desactivar Google Analytics.
+2. Menú "Compilación" > Authentication > "Comenzar" > pestaña "Sign-in method" > activá "Google" (poné tu mail de soporte) > Guardar.
+3. Authentication > pestaña "Settings" > "Dominios autorizados" > agregá el dominio donde está tu web (ej: tusitio.com). Si no, el login no funciona.
+4. Compilación > Firestore Database > "Crear base de datos" > modo producción > ubicación southamerica-east1 (São Paulo).
+5. En Firestore, pestaña "Reglas": borrá todo, pegá el contenido de firestore.rules (con los mails reales) y tocá "Publicar".
+6. Ícono de engranaje > "Configuración del proyecto" > abajo "Tus apps" > ícono </> (web) > registrá la app > copiá los datos de firebaseConfig (apiKey, authDomain, projectId, appId) y pegalos en firebase-config.js.
+
+B) CLOUDINARY (fotos, gratis sin tarjeta)
+1. Creá cuenta en https://cloudinary.com. En el Dashboard copiá el "Cloud name".
+2. Settings (engranaje) > Upload > "Upload presets" > "Add upload preset": Signing mode = "Unsigned", ponele un nombre (ej: autos) y guardá.
+3. Pegá cloud name y nombre del preset en firebase-config.js. También poné ahí los dos mails en ADMIN_EMAILS.
+
+C) SUBIR A TU WEB
+Subí todos estos archivos juntos, en la misma carpeta que ya tenés: index.html, style.css, script.js, cloud.js, firebase-config.js, admin.html.
+Entrá desde el celular a tusitio.com/admin.html, ingresá con Google y listo. Podés guardarlo como acceso directo en la pantalla de inicio.

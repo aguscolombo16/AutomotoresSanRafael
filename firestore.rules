@@ -1,0 +1,26 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Solo estos dos mails pueden cargar, editar o borrar (cambialos por los reales)
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in [
+          'tu-mail@gmail.com',
+          'mail-de-tu-companero@gmail.com'
+        ];
+    }
+
+    // Catálogo: lo ve cualquiera, solo los dueños escriben
+    match /vehicles/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Datos privados (patente): solo los dueños leen y escriben
+    match /vehicles_private/{id} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
