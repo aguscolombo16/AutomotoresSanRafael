@@ -3,11 +3,15 @@ const WSP_NUMBER = "5492604222363";
 // ---------- COLORES POR AGENCIA ----------
 // Solo vos sabés qué color es de quién: en la página NO se muestra el nombre.
 const SELLERS = {
-  nativa:    { name:"Nativa Motors", color:"#155EEF" },
-  CP3:  { name:"CP3",     color:"#F97316" },
-  Videla:  { name:"Videla Automotores",     color:"#A855F7" },
-  Rosseti:  { name:"Rosseti",     color:"#EF4444" },
-  particular:{ name:"Particular",    color:"#111827" }
+  nativa:       { name:"Ruta Cero",           color:"#155EEF" },
+  NativaMotors: { name:"Nativa Motors",       color:"#16A34A" },
+  JA:           { name:"JA Automotores",      color:"#14B8A6" },
+  Rodando:      { name:"Rodando Automotores", color:"#EAB308" },
+  Genesis:      { name:"Genesis Automotores", color:"#EC4899" },
+  CP3:          { name:"CP3",                 color:"#F97316" },
+  Videla:       { name:"Videla Automotores",  color:"#A855F7" },
+  Rosseti:      { name:"Rosseti",             color:"#EF4444" },
+  particular:   { name:"Particular",          color:"#111827" }
 };
 const sellerOf = car => SELLERS[car.s] || SELLERS.particular;
 
