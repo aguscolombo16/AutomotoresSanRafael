@@ -16,7 +16,7 @@ const SELLERS = {
 const sellerOf = car => SELLERS[car.s] || SELLERS.particular;
 
 // ---------- CATEGORÍAS ----------
-// En cada vehículo de CARS agregale  cat:"motos" | "agricolas" | "autoelevadores" | "lanchas"
+// En cada vehículo de CARS agregale  cat:"motos" | "camiones" | "agricolas" | "autoelevadores" | "lanchas"
 // Si no tiene "cat", se toma como "autos".
 // "0km" no es una categoría que se carga: aparece sola con todo lo que tenga km:0 (o hs:0).
 // Para máquinas y lanchas podés usar  hs:1200  (horas de uso) en vez de km.
@@ -25,6 +25,7 @@ const CATEGORIES = [
   { id:"autos",          label:"Autos" },
   { id:"0km",            label:"0 km" },
   { id:"motos",          label:"Motos" },
+  { id:"camiones",       label:"Camiones" },
   { id:"agricolas",      label:"Máquinas agrícolas" },
   { id:"autoelevadores", label:"Autoelevadores" },
   { id:"lanchas",        label:"Lanchas" }
@@ -37,6 +38,7 @@ const CAR_ICON = `<path d="M3 13l1.5-4.5A2 2 0 0 1 6.4 7h11.2a2 2 0 0 1 1.9 1.5L
 const ICONS = {
   autos: CAR_ICON,
   motos: `<circle cx="5.5" cy="16.5" r="3"/><circle cx="18.5" cy="16.5" r="3"/><path d="M5.5 16.5L9 9h4l3 4.5 2.5 3M13 9l1.5-2H17M9 9H7"/>`,
+  camiones: `<path d="M2 6h11v10H2z"/><path d="M13 9h4.2l2.8 3.6V16h-7"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="16.5" cy="17.5" r="1.8"/>`,
   agricolas: `<circle cx="7" cy="16" r="3.5"/><circle cx="18" cy="17.5" r="2"/><path d="M10.5 16H16M4 12V7h6l2 5h6v3.5M10 12V7"/>`,
   autoelevadores: `<path d="M4 18V8h6l2 6v4M4 12h8"/><circle cx="6" cy="19" r="1.5"/><circle cx="12" cy="19" r="1.5"/><path d="M17 4v15M17 17h4"/>`,
   lanchas: `<path d="M3 15h18l-2.5 4h-13z"/><path d="M12 3v12M12 4l6 8h-6M12 7l-4 5h4"/>`
@@ -49,7 +51,9 @@ const BRAND_COLORS = {
   "Toyota": ["#C2410C","#F97316"], "Honda": ["#6D28D9","#A78BFA"], "Nissan": ["#1F2937","#4B5563"],
   "Citroën": ["#0F766E","#2DD4BF"], "Jeep": ["#166534","#4ADE80"],
   "Yamaha": ["#1D4ED8","#60A5FA"], "Zanella": ["#B91C1C","#F87171"], "John Deere": ["#166534","#4ADE80"],
-  "Massey Ferguson": ["#B91C1C","#F87171"], "Hyster": ["#CA8A04","#FACC15"], "Quicksilver": ["#0E7490","#22D3EE"]
+  "Massey Ferguson": ["#B91C1C","#F87171"], "Hyster": ["#CA8A04","#FACC15"], "Quicksilver": ["#0E7490","#22D3EE"],
+  "Scania": ["#1D4ED8","#60A5FA"], "Mercedes-Benz": ["#1F2937","#9CA3AF"], "Iveco": ["#1D4ED8","#3B82F6"],
+  "Volvo": ["#0E7490","#22D3EE"], "DAF": ["#B91C1C","#F87171"]
 };
 
 const PHOTOS_PER_CAR = 3;
@@ -128,7 +132,12 @@ function mixedOrder(list){
 const RANK = new Map();
 mixedOrder(CARS).forEach((c, i) => RANK.set(c.id, i));
 
-const fmtPrice = n => "u$s " + n.toLocaleString("es-AR");
+// Moneda: car.mon = "USD" (dólares) o "ARS" (pesos). Si un vehículo no tiene "mon", se toma como pesos.
+const fmtPrice = car => (car.mon === "USD" ? "u$s " : "$ ") + car.p.toLocaleString("es-AR");
+// Solo para ORDENAR por precio cuando se mezclan pesos y dólares (no se muestra en ningún lado).
+// Poné acá un valor aproximado del dólar y listo.
+const COTIZACION_DOLAR = 1500;
+const enPesos = car => car.mon === "USD" ? car.p * COTIZACION_DOLAR : car.p;
 const fmtKm = n => n.toLocaleString("es-AR") + " km";
 // Muestra km o horas según corresponda
 const fmtUse = car => car.hs !== undefined ? car.hs.toLocaleString("es-AR") + " hs" : fmtKm(car.km);
@@ -154,7 +163,7 @@ function carCard(car){
       <h3>${car.b} ${car.m}</h3>
       <div class="card-specs">${specs.map(s=>`<span>${s}</span>`).join("<span>·</span>")}</div>
       <div class="card-price">
-        <b>${fmtPrice(car.p)}</b>
+        <b>${fmtPrice(car)}</b>
         <span class="see">Ver detalles →</span>
       </div>
     </div>
@@ -226,16 +235,18 @@ function applyFilters(){
     if (q && !text.includes(q)) return false;
     if (marca && car.b !== marca) return false;
     if (rango){
-      const [min,max] = rango.split("-").map(Number);
-      if (car.p < min || car.p > max) return false;
+      // el valor es  MONEDA:desde-hasta  (ej: USD:10000-20000)
+      const [mon, tramo] = rango.split(":");
+      const [min,max] = tramo.split("-").map(Number);
+      if ((car.mon || "ARS") !== mon || car.p < min || car.p > max) return false;
     }
     return true;
   });
 
   const use = c => c.hs !== undefined ? c.hs : c.km;
   if (!orden) result.sort((a,b)=>RANK.get(a.id)-RANK.get(b.id));
-  else if (orden === "precio-asc") result.sort((a,b)=>a.p-b.p);
-  else if (orden === "precio-desc") result.sort((a,b)=>b.p-a.p);
+  else if (orden === "precio-asc") result.sort((a,b)=>enPesos(a)-enPesos(b));
+  else if (orden === "precio-desc") result.sort((a,b)=>enPesos(b)-enPesos(a));
   else if (orden === "anio-desc") result.sort((a,b)=>b.y-a.y);
   else if (orden === "km-asc") result.sort((a,b)=>use(a)-use(b));
 
@@ -300,7 +311,7 @@ function openModal(car){
   currentCar = car;
   renderGallery(car);
   document.getElementById("mTitle").textContent = `${car.b} ${car.m} ${car.y}`;
-  document.getElementById("mPrice").textContent = fmtPrice(car.p);
+  document.getElementById("mPrice").textContent = fmtPrice(car);
   const sel = sellerOf(car);
   document.getElementById("mDot").style.background = sel.color;
   const rows = [

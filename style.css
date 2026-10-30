@@ -165,9 +165,10 @@ nav a:hover{ opacity:1; }
   background:var(--card); border-radius:18px; max-width:640px; width:100%;
   overflow:hidden; margin-bottom:5vh;
 }
-.modal-gallery{ position:relative; aspect-ratio:16/10; display:flex; align-items:center; justify-content:center; }
+.modal-gallery{ position:relative; aspect-ratio:4/3; max-height:72vh; display:flex; align-items:center; justify-content:center; }
 .modal-gallery svg{ width:34%; height:34%; }
-.modal-gallery img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:2; }
+/* contain = la foto se ve COMPLETA (sin recortar); lo que sobra se rellena con fondo oscuro */
+.modal-gallery img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; background:#0b0d12; z-index:2; }
 .modal-gallery .navbtn{
   position:absolute; top:50%; transform:translateY(-50%); width:36px; height:36px; border-radius:50%;
   background:rgba(255,255,255,.9); border:none; display:flex; align-items:center; justify-content:center;

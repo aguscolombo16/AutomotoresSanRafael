@@ -66,6 +66,7 @@ button:disabled{opacity:.55}
         <select id="cat">
           <option value="autos">Autos y camionetas</option>
           <option value="motos">Motos</option>
+          <option value="camiones">Camiones</option>
           <option value="agricolas">Máquinas agrícolas</option>
           <option value="autoelevadores">Autoelevadores</option>
           <option value="lanchas">Lanchas</option>
@@ -93,6 +94,7 @@ button:disabled{opacity:.55}
           <option>Peugeot</option><option>Toyota</option><option>Honda</option><option>Nissan</option><option>Citroën</option>
           <option>Jeep</option><option>Hyundai</option><option>Yamaha</option><option>Zanella</option><option>John Deere</option>
           <option>Massey Ferguson</option><option>Hyster</option>
+          <option>Scania</option><option>Mercedes-Benz</option><option>Iveco</option><option>Volvo</option><option>DAF</option>
         </datalist>
 
         <div class="row">
@@ -100,9 +102,13 @@ button:disabled{opacity:.55}
           <div><label id="useLabel">Kilómetros</label><input id="use" type="number" inputmode="numeric" min="0" required><div class="hint">0 = aparece en "0 km"</div></div>
         </div>
 
-        <label>Precio</label>
-        <input id="p" type="number" inputmode="numeric" min="0" required>
-        <div class="hint">Solo números, sin puntos.</div>
+        <div class="row">
+          <div><label>Precio</label>
+            <input id="p" type="number" inputmode="numeric" min="0" required>
+            <div class="hint">Solo números, sin puntos.</div></div>
+          <div><label>Moneda</label>
+            <select id="mon"><option value="ARS">Pesos ($)</option><option value="USD">Dólares (u$s)</option></select></div>
+        </div>
 
         <div class="row">
           <div><label>Transmisión</label>
@@ -234,7 +240,7 @@ $("form").onsubmit = async e => {
     const data = {
       cat, s: $("s").value,
       b: $("b").value.trim(), m: $("m").value.trim(),
-      y: Number($("y").value), p: Number($("p").value),
+      y: Number($("y").value), p: Number($("p").value), mon: $("mon").value,
       t: $("t").value, f: $("f").value, c: $("c").value.trim(),
       photos,
       [usesHours(cat) ? "hs" : "km"]: n,
@@ -277,7 +283,7 @@ async function loadList() {
       <img src="${esc((v.photos?.[0] || "").replace("/upload/", "/upload/f_auto,q_auto,w_200/"))}" alt="">
       <div>
         <b>${esc(v.b)} ${esc(v.m)} ${esc(v.y)}${v.sold ? '<span class="badge">VENDIDO</span>' : ""}</b>
-        <div class="meta">${esc(v.cat)} · ${Number(v.p).toLocaleString("es-AR")}${v.plate ? " · " + esc(v.plate) : ""}</div>
+        <div class="meta">${esc(v.cat)} · ${v.mon === "USD" ? "u$s" : "$"} ${Number(v.p).toLocaleString("es-AR")}${v.plate ? " · " + esc(v.plate) : ""}</div>
         <div class="btns">
           <button class="ghost" data-a="edit">Editar</button>
           <button class="ghost" data-a="sold">${v.sold ? "Volver a publicar" : "Marcar vendido"}</button>
@@ -304,7 +310,7 @@ $("list").onclick = async e => {
       editing = v; files = [];
       $("cat").value = v.cat; syncCat();
       $("s").value = v.s || "particular";
-      $("b").value = v.b; $("m").value = v.m; $("y").value = v.y; $("p").value = v.p;
+      $("b").value = v.b; $("m").value = v.m; $("y").value = v.y; $("p").value = v.p; $("mon").value = v.mon || "ARS";
       $("use").value = usesHours(v.cat) ? v.hs : v.km;
       $("t").value = v.t || ""; $("f").value = v.f || ""; $("c").value = v.c || "";
       $("plate").value = v.plate || "";
